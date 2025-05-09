@@ -30,15 +30,20 @@ def menu():
     print("(C)reate new account")
     print("(Q)uit")
     response = input("What would you like to do? Please enter a command: ")
+    
+    
     if response.upper() == "L":
-        
-        row_exists = authenticate() 
-        print("Row Exists:", row_exists)
-        if row_exists == True:
-            print("Login successful!")
-        else:
-            print("Invalid credentials. Please try again.")
-            authenticate()
+        user_authd = False
+
+        while user_authd == False:
+            authenticated  = authenticate() 
+            if authenticated  == True:
+                user_authd = True
+                print("Authenticated:", authenticated)
+                return authenticated
+            else:
+                print("Invalid credentials. Please try again.")
+            
     elif response.upper() == "C":
         create_account()
     elif response.upper() == "Q":
@@ -72,14 +77,11 @@ def authenticate():
     
     return test_hash == stored_hash
 
-
-
-# This function checks to see if the user already exists in the database
+#  #Check to see specific user already exists
 def check_user_exists(username):
     cursor.execute("SELECT 1 FROM userdb WHERE users = ?", (username,))
     result = cursor.fetchone()
     return result
-
 
 # this function creates an account if one doesn't already exist with that name
 # if the name exists the while loop repeats
@@ -93,7 +95,7 @@ def create_account():
         username = input("Please enter a username:")
         if 5 <= len(username) <= 32:
             
-            #Check to see if username exists, if they don't exist repeat while loop
+            #Check to see specific user already exists, if they don't exist repeat while loop
             user_exists = check_user_exists(username)
             if user_exists is None:
                 print("Username set to", username, "\n")
@@ -131,10 +133,13 @@ def create_account():
 print("Welcome to Asgard Key Vault 2!")
 
 if check_db_for_users():
-    menu()  
+    check_if_auth = menu()  
+    print(check_if_auth)
 else:
     print("Before we get started, you need to create a username and password \
           to log into Asgard Key Vault 2.  Below are the rules for naming an account.\n")
     create_account()
 
+if check_if_auth:
+    print("User authentication and control has moved to this section of the code")
 
